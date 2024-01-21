@@ -1,4 +1,4 @@
-name: Build
+name: App build and push
 
 on:
   push:
@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - main.go
+      - go.mod
+      - Dockerfile
+      - .github/workflows/**
 
 permissions:
   contents: write
@@ -28,7 +31,7 @@ jobs:
           go-version-file: "go.mod"
           cache: true
 
-      - name: Go build
+      - name: Build Application
         run: |
           make build-app
 
@@ -47,6 +50,7 @@ jobs:
             type=sha,prefix=
 
       - name: Build Image
+        id: container
         uses: docker/build-push-action@4a13e500e55cf31b7a5d59a38ab2040ab0f42f56 # v5.1.0
         with:
           context: .
@@ -54,3 +58,15 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=docker,dest=/tmp/image.tar
+
+      - name: Image Digest
+        run: |
+          echo "Image digest is ${{ steps.container.outputs.digest }}"
+
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}

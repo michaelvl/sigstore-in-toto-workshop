@@ -1,15 +1,19 @@
 package main
 
-// 1
-
 import (
-	"fmt"
+	stdliblog "log"
 	"time"
+	"go.uber.org/zap"
 )
 
 func main() {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		stdliblog.Fatal(err)
+	}
+	log := logger.Sugar()
 	for {
-		fmt.Println("Hello, world!")
+		log.Info("Hello, world!")
 		time.Sleep(time.Second * 1)
 	}
 }
