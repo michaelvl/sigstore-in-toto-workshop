@@ -15,6 +15,6 @@ permissions:
   packages: write
 
 jobs:
-  build:
+  app-build:
     uses: michaelvl/gha-reusable-workflows/.github/workflows/container-build-push.yaml@main
 
