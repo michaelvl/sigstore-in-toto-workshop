@@ -5,7 +5,7 @@ deploy-sigstore-policy-controller:
 
 .PHONY: build-app
 build-app:
-	go build -o simple-app main.go
+	go build -o main main.go
 
 .PHONY: build-container
 build-container:
