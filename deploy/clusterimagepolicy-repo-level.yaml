@@ -1,0 +1,11 @@
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: repo-michaelvl-sigstore-in-toto-workshop
+spec:
+  mode: enforce
+  images:
+    - glob: "ghcr.io/michaelvl/sigstore-in-toto-workshop@**"
+  authorities:
+    - static:
+        action: pass

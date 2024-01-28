@@ -1,0 +1,31 @@
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: repo-michaelvl-sigstore-in-toto-workshop
+spec:
+  mode: enforce
+  images:
+    - glob: "ghcr.io/michaelvl/sigstore-in-toto-workshop@**"
+  authorities:
+  - name: keyless
+    keyless:
+      url: https://fulcio.sigstore.dev
+      identities:
+       - issuer: https://token.actions.githubusercontent.com
+         subjectRegExp: "https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/container-build-push.yaml@refs/.*"
+    ctlog:
+      url: https://rekor.sigstore.dev
+    attestations:
+    - name: provenance
+      predicateType: https://slsa.dev/provenance/v0.2
+      policy:
+        type: rego
+        data: |
+          package sigstore
+          default isCompliant = false
+          isCompliant {
+            input.predicateType == "https://slsa.dev/provenance/v0.2"
+            input.subject[_].name == "ghcr.io/michaelvl/sigstore-in-toto-workshop"
+            input.predicate.builder.id == "https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/container-build-push.yaml@refs/heads/main"
+            input.predicate.invocation.configSource.uri == "git+https://github.com/michaelvl/sigstore-in-toto-workshop@refs/heads/main"
+          }
