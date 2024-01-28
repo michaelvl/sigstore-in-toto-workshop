@@ -3,6 +3,7 @@ package main
 import (
 	stdliblog "log"
 	"time"
+
 	"go.uber.org/zap"
 )
 
@@ -17,4 +18,3 @@ func main() {
 		time.Sleep(time.Second * 1)
 	}
 }
-
