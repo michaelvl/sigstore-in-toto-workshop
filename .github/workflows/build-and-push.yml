@@ -42,3 +42,14 @@ jobs:
       id-token: write
       contents: read
       packages: write
+
+  app-container-scan:
+    needs:
+    - app-build
+    uses: michaelvl/gha-reusable-workflows/.github/workflows/container-scan.yaml@main
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    with:
+      digest: ${{ needs.app-build.outputs.digest }}
