@@ -46,3 +46,40 @@ cosign download attestation --predicate-type https://cosign.sigstore.dev/attesta
 ```
 
 Rekor search: https://search.sigstore.dev
+
+## Gitsign Setup
+
+Enable signing using Gitsign:
+
+```
+git config --local commit.gpgsign true  # Sign all commits
+git config --local tag.gpgsign true  # Sign all tags
+git config --local gpg.x509.program gitsign  # Use gitsign for signing
+git config --local gpg.format x509  # gitsign expects x509 args
+```
+
+Merging GitHub PRs using the Web UI will sign commit using a common
+GitHub key **not your own individual key**, since GitHub does not have
+access to your private key.
+
+Merging PRs while signing with your individual key:
+
+```
+# Create change
+...
+
+# Create PR
+gh pr create
+
+# Later
+gh pr checkout <number>
+git checkout main
+git merge -
+git push origin main
+# PR is automatically closed
+
+# Verify HEAD
+gitsign verify --certificate-identity-regexp=.*@example.com --certificate-oidc-issuer=https://github.com/login/oauth HEAD
+```
+
+Note, that squashing commits will not close the PR.
