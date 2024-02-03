@@ -2,11 +2,11 @@
 
 This is an example project used together with
 [michaelvl/gha-reusable-workflows](https://github.com/michaelvl/gha-reusable-workflows)
-to demonstrate Sigstore signed artifacts, SBOM and SLSA provenance.
+to demonstrate SLSA level 3 secure software supply chain.
 
-See [Supply chain threats](https://slsa.dev/spec/v1.0/threats-overview)
+See [SLSA Supply chain threats](https://slsa.dev/spec/v1.0/threats-overview)
 
-## Verifying
+## Verifying Artifacts
 
 ```
 export REPO=ghcr.io/michaelvl/sigstore-in-toto-workshop
@@ -15,12 +15,12 @@ export IMAGE=$REPO@$DIGEST && echo $IMAGE
 
 cosign tree $IMAGE
 
-# Image
+# Container image signature
 cosign verify --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/container-build-push.yaml@refs/.* \
               --certificate-oidc-issuer https://token.actions.githubusercontent.com \
 			  $IMAGE | jq .
 
-# SLSA provenance
+# App SLSA provenance
 cosign verify-attestation --type https://slsa.dev/provenance/v0.2 \
               --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/container-build-push.yaml@refs/.* \
               --certificate-oidc-issuer https://token.actions.githubusercontent.com \
@@ -28,7 +28,7 @@ cosign verify-attestation --type https://slsa.dev/provenance/v0.2 \
 
 cosign download attestation --predicate-type https://slsa.dev/provenance/v0.2 $IMAGE | jq -r '.payload' | base64 -d | jq .
 
-# SBOM
+# Container SBOM
 cosign verify-attestation --type https://spdx.dev/Document \
               --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/container-build-push.yaml@refs/.* \
               --certificate-oidc-issuer https://token.actions.githubusercontent.com \
@@ -36,7 +36,7 @@ cosign verify-attestation --type https://spdx.dev/Document \
 
 cosign download attestation --predicate-type https://spdx.dev/Document $IMAGE | jq -r '.payload' | base64 -d | jq .
 
-# Image scan
+# Container Trivy scan
 cosign verify-attestation --type https://cosign.sigstore.dev/attestation/vuln/v1 \
               --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/container-scan.yaml@refs/.* \
               --certificate-oidc-issuer https://token.actions.githubusercontent.com \
