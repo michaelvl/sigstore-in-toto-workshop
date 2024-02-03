@@ -42,6 +42,7 @@ jobs:
       id-token: write
       contents: read
       packages: write
+      pull-requests: read
 
   app-scan:
     needs:
