@@ -43,6 +43,14 @@ cosign verify-attestation --type https://cosign.sigstore.dev/attestation/vuln/v1
               $IMAGE > /dev/null
 
 cosign download attestation --predicate-type https://cosign.sigstore.dev/attestation/vuln/v1 $IMAGE | jq -r '.payload' | base64 -d | jq .
+
+# Verification summary attestation
+cosign verify-attestation --type https://github.com/michaelvl/gha-reusable-workflows/organisation-policy  \
+              --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/policy-verification.yaml@refs/.* \
+              --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              $IMAGE > /dev/null
+
+cosign download attestation --predicate-type https://github.com/michaelvl/gha-reusable-workflows/organisation-policy $IMAGE | jq -r '.payload' | base64 -d | jq .
 ```
 
 Rekor search: https://search.sigstore.dev
