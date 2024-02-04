@@ -54,3 +54,14 @@ jobs:
       packages: write
     with:
       digest: ${{ needs.app-build.outputs.digest }}
+
+  app-policy-check:
+    needs:
+    - app-scan
+    uses: michaelvl/gha-reusable-workflows/.github/workflows/policy-verification.yaml@main
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    with:
+      digest: ${{ needs.app-build.outputs.digest }}
