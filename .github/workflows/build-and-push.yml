@@ -57,7 +57,8 @@ jobs:
 
   app-policy-check:
     needs:
-    - app-scan
+    - app-build
+    - app-scan # For cosign race
     uses: michaelvl/gha-reusable-workflows/.github/workflows/policy-verification.yaml@main
     permissions:
       id-token: write
@@ -65,3 +66,4 @@ jobs:
       packages: write
     with:
       digest: ${{ needs.app-build.outputs.digest }}
+
