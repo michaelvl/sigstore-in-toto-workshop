@@ -23,6 +23,8 @@ deploy-sigstore-policy-controller:
 .PHONY: enable-policy-controller
 enable-policy-controller:
 	kubectl label namespace default policy.sigstore.dev/include=true
+	kubectl apply -f deploy/clusterimagepolicy-trusted-builder.yaml
+	kubectl apply -f deploy/clusterimagepolicy-vsa.yaml
 
 .PHONY: test-deploy-rejection0
 test-deploy-rejection0:
@@ -32,13 +34,18 @@ test-deploy-rejection0:
 test-deploy-rejection1:
 	kubectl run --image $(REPO)@$(shell crane digest $(REPO):latest) tester
 
+.PHONY: deploy-app
+deploy-app:
+	$(eval DIGEST=$(shell crane digest ${REPO}:latest))
+	helm template test-app charts/sigstore-in-toto-workshop-helm --set image.digest=${DIGEST} > app.yaml
+	cat app.yaml
+	kubectl apply -f app.yaml
+
 .PHONY: policy-data
 policy-data:
 	cosign download attestation --predicate-type https://slsa.dev/provenance/v0.2 ${IMAGE} | jq -r '.payload' | base64 -d > _provenance.json
 	cosign download attestation --predicate-type https://spdx.dev/Document ${IMAGE} | jq -r '.payload' | base64 -d > _sbom.json
 	cosign download attestation --predicate-type https://cosign.sigstore.dev/attestation/vuln/v1 ${IMAGE} | jq -r '.payload' | base64 -d > _vuln.json
-
-#	  '.provenance.orig.Attestation=($$prov | tojson) .sbom.orig.Attestation=($$sbom | tojson)' > policydata.json
 
 .PHONY: policy-data-bundle
 policy-data-bundle:
@@ -47,3 +54,7 @@ policy-data-bundle:
 	  --argjson sbom "$$(<_sbom.json)" \
 	  --argjson vuln "$$(<_vuln.json)" \
 	  '.provenance.orig.Attestation=($$prov | tojson) | .sbom.orig.Attestation=($$sbom | tojson) | .vuln.orig.Attestation=($$vuln | tojson)' > policydata.json
+
+.PHONY: test-chart
+test-chart:
+	docker run --rm -it --workdir=/data --volume $(shell pwd)/charts:/data quay.io/helmpack/chart-testing:v3.10.1 ct lint --chart-dirs . --charts sigstore-in-toto-workshop-helm --validate-maintainers=false

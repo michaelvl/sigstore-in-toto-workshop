@@ -11,7 +11,7 @@ on:
       - .github/workflows/**
 
 permissions:
-  contents: write
+  contents: read
   packages: write
 
 jobs:
@@ -66,4 +66,3 @@ jobs:
       packages: write
     with:
       digest: ${{ needs.app-build.outputs.digest }}
-

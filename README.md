@@ -44,6 +44,14 @@ cosign verify-attestation --type https://cosign.sigstore.dev/attestation/vuln/v1
 
 cosign download attestation --predicate-type https://cosign.sigstore.dev/attestation/vuln/v1 $IMAGE | jq -r '.payload' | base64 -d | jq .
 
+# PR provenance
+cosign verify-attestation --type https://github.com/michaelvl/gha-reusable-workflows/pr-provenance  \
+              --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/container-build-push.yaml@refs/.* \
+              --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              $IMAGE > /dev/null
+
+cosign download attestation --predicate-type https://github.com/michaelvl/gha-reusable-workflows/pr-provenance $IMAGE | jq -r '.payload' | base64 -d | jq .
+
 # Verification summary attestation
 cosign verify-attestation --type https://github.com/michaelvl/gha-reusable-workflows/organisation-policy  \
               --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/policy-verification.yaml@refs/.* \
