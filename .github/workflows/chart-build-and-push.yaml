@@ -1,0 +1,41 @@
+name: App build and push
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - charts/**
+      - .github/workflows/**
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # First, we run project specific local tests
+  # FIXME: This has been temporarily removed to speed up development
+  chart-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Chart test
+        run: |
+          make test-chart
+
+  # Second, we hand over the build to the trusted builder
+  chart-build:
+    needs:
+    - chart-test
+    uses: michaelvl/gha-reusable-workflows/.github/workflows/chart-build-push.yaml@main
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+      pull-requests: read
+    with:
+      chartDir: charts
+      chartName: sigstore-in-toto-workshop-helm
+      chartRegistryName: ghcr.io/${{ github.repository }}-helm
