@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - charts/**
-      - .github/workflows/**
+      - .github/workflows/chart-build-and-push.yaml
 
 permissions:
   contents: read

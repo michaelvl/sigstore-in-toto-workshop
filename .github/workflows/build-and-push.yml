@@ -8,7 +8,7 @@ on:
       - main.go
       - go.mod
       - Dockerfile
-      - .github/workflows/**
+      - .github/workflows/build-and-push.yaml
 
 permissions:
   contents: read
