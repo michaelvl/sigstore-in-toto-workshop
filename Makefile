@@ -57,4 +57,4 @@ policy-data-bundle:
 
 .PHONY: test-chart
 test-chart:
-	docker run --rm -it --workdir=/data --volume $(shell pwd)/charts:/data quay.io/helmpack/chart-testing:v3.10.1 ct lint --chart-dirs . --charts sigstore-in-toto-workshop-helm --validate-maintainers=false
+	docker run --rm -i --workdir=/data --volume $(shell pwd)/charts:/data quay.io/helmpack/chart-testing:v3.10.1 ct lint --chart-dirs . --charts sigstore-in-toto-workshop-helm --validate-maintainers=false

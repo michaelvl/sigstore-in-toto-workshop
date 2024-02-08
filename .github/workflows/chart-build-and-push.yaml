@@ -1,4 +1,4 @@
-name: App build and push
+name: Chart build and push
 
 on:
   push:
