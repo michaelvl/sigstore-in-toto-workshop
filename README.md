@@ -8,6 +8,8 @@ See [SLSA Supply chain threats](https://slsa.dev/spec/v1.0/threats-overview)
 
 ## Verifying Artifacts
 
+Container artifact:
+
 ```
 export REPO=ghcr.io/michaelvl/sigstore-in-toto-workshop
 export DIGEST=$(crane digest $REPO:latest) && echo $DIGEST
@@ -59,6 +61,21 @@ cosign verify-attestation --type https://github.com/michaelvl/gha-reusable-workf
               $IMAGE > /dev/null
 
 cosign download attestation --predicate-type https://github.com/michaelvl/gha-reusable-workflows/organisation-policy $IMAGE | jq -r '.payload' | base64 -d | jq .
+```
+
+Helm chart:
+
+```
+export CHARTREPO=ghcr.io/michaelvl/sigstore-in-toto-workshop-helm
+export CHARTDIGEST=$(crane digest $CHARTREPO:latest) && echo $CHARTDIGEST
+export CHART=$CHARTREPO@$CHARTDIGEST && echo $CHART
+
+cosign tree $IMAGE
+
+# Container image signature
+cosign verify --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/chart-build-push.yaml@refs/.* \
+              --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+			  $CHART | jq .
 ```
 
 Rekor search: https://search.sigstore.dev
