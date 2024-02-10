@@ -17,13 +17,15 @@ spec:
       url: https://rekor.sigstore.dev
     attestations:
     - name: organisation-vsa
-      predicateType: "https://github.com/michaelvl/gha-reusable-workflows/organisation-policy"
+      predicateType: "https://slsa.dev/verification_summary/v1"
       policy:
         type: rego
         data: |
           package sigstore
           default isCompliant = false
           isCompliant {
+            (time.parse_rfc3339_ns(input.predicate.timeVerified) + time.parse_duration_ns("48h")) > time.now_ns()
             input.predicate.verificationResult == "PASSED"
-            (time.parse_rfc3339_ns(input.predicate.verifiedAt) + time.parse_duration_ns("48h")) > time.now_ns()
+            slsa_level := input.predicate.verifiedLevels[_]
+            slsa_level == "SLSA_BUILD_LEVEL_3"
           }
