@@ -1,6 +1,6 @@
 module github.com/michaelvl/sigstore-in-toto-workshop
 
-go 1.21.2
+go 1.21
 
 require (
 	go.uber.org/multierr v1.10.0 // indirect
