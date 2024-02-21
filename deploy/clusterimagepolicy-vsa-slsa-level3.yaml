@@ -1,7 +1,7 @@
 apiVersion: policy.sigstore.dev/v1beta1
 kind: ClusterImagePolicy
 metadata:
-  name: repo-michaelvl-sigstore-in-toto-workshop
+  name: vsa-slsa-level3
 spec:
   mode: enforce
   images:

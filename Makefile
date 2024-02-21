@@ -24,7 +24,7 @@ deploy-sigstore-policy-controller:
 enable-policy-controller:
 	kubectl label namespace default policy.sigstore.dev/include=true
 	kubectl apply -f deploy/clusterimagepolicy-trusted-builder.yaml
-	kubectl apply -f deploy/clusterimagepolicy-vsa.yaml
+	kubectl apply -f deploy/clusterimagepolicy-vsa-slsa-level3.yaml
 
 .PHONY: test-deploy-rejection0
 test-deploy-rejection0:
@@ -39,7 +39,7 @@ deploy-app:
 	$(eval DIGEST=$(shell crane digest ${REPO}:latest))
 	helm template test-app charts/sigstore-in-toto-workshop-helm --set image.digest=${DIGEST} > app.yaml
 	cat app.yaml
-	kubectl apply -f app.yaml
+	kubectl apply --dry-run=server -f app.yaml
 
 .PHONY: policy-data
 policy-data:
