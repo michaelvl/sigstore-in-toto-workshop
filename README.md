@@ -38,14 +38,6 @@ cosign verify-attestation --type https://spdx.dev/Document \
 
 cosign download attestation --predicate-type https://spdx.dev/Document $IMAGE | jq -r '.payload' | base64 -d | jq .
 
-# Container Trivy scan
-cosign verify-attestation --type https://cosign.sigstore.dev/attestation/vuln/v1 \
-              --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/container-scan.yaml@refs/.* \
-              --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-              $IMAGE > /dev/null
-
-cosign download attestation --predicate-type https://cosign.sigstore.dev/attestation/vuln/v1 $IMAGE | jq -r '.payload' | base64 -d | jq .
-
 # PR provenance
 cosign verify-attestation --type https://github.com/michaelvl/gha-reusable-workflows/pr-provenance  \
               --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/container-build-push.yaml@refs/.* \
@@ -53,6 +45,14 @@ cosign verify-attestation --type https://github.com/michaelvl/gha-reusable-workf
               $IMAGE > /dev/null
 
 cosign download attestation --predicate-type https://github.com/michaelvl/gha-reusable-workflows/pr-provenance $IMAGE | jq -r '.payload' | base64 -d | jq .
+
+# Container Trivy scan
+cosign verify-attestation --type https://cosign.sigstore.dev/attestation/vuln/v1 \
+              --certificate-identity-regexp https://github.com/michaelvl/gha-reusable-workflows/.github/workflows/container-scan.yaml@refs/.* \
+              --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+              $IMAGE > /dev/null
+
+cosign download attestation --predicate-type https://cosign.sigstore.dev/attestation/vuln/v1 $IMAGE | jq -r '.payload' | base64 -d | jq .
 
 # Verification summary attestation
 cosign verify-attestation --type https://slsa.dev/verification_summary/v1 \
