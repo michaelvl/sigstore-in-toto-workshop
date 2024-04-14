@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read   # Testing, expected to be 'write'
   id-token: write
+  pull-requests: read
 
 jobs:
   app-source-attest:
