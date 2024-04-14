@@ -1,4 +1,4 @@
-name: App build and push
+name: App source attester
 
 on:
   push:
